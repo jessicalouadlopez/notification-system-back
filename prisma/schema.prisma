@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int                     @id @default(autoincrement())
+  email           String                  @unique
+  name            String
+  phone_number    String
+  categories      CategoriesOnUsers[]
+  channels        ChannelsOnUsers[]
+}
+
+model Category {
+  id              Int                     @id @default(autoincrement())
+  name            String                  @unique
+  users           CategoriesOnUsers[]
+}
+
+model CategoriesOnUsers {
+  user            User                    @relation(fields: [userId], references: [id])
+  userId          Int
+  category        Category                @relation(fields: [categoryId], references: [id])
+  categoryId      Int
+
+  @@id([userId, categoryId])
+}
+
+model Channel {
+  id              Int                     @id @default(autoincrement())
+  name            String                  @unique
+  users           ChannelsOnUsers[]
+}
+
+model ChannelsOnUsers {
+  user            User                    @relation(fields: [userId], references: [id])
+  userId          Int
+  channel         Channel                 @relation(fields: [channelId], references: [id])
+  channelId       Int
+
+  @@id([userId, channelId])
+}
+
+model LogHistory {
+  id              Int                     @id @default(autoincrement())
+  message         String                  @db.Text
+}
